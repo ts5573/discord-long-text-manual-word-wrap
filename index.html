@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hard Word Wrap Utility</title>
+    <title>Text Utility: Wrap & Split</title>
     <style>
         /* General Styles */
         :root {
-            --color-primary: #4f46e5; /* Indigo-600 */
-            --color-primary-dark: #4338ca; /* Indigo-700 */
+            --color-primary: #1d4ed8; /* Blue-700 */
+            --color-primary-dark: #1e40af; /* Blue-800 */
             --color-success: #10b981; /* Green-500 */
             --color-success-dark: #059669; /* Green-600 */
             --color-bg: #f7f9fc;
@@ -26,10 +26,10 @@
 
         /* Container and Header */
         .container {
-            max-width: 80rem; /* Equivalent to max-w-4xl */
+            max-width: 80rem; 
             margin-left: auto;
             margin-right: auto;
-            padding: 1.5rem; /* Base padding */
+            padding: 1.5rem; 
         }
 
         .header {
@@ -38,14 +38,14 @@
         }
 
         h1 {
-            font-size: 2.25rem; /* 4xl */
-            font-weight: 800; /* Extrabold */
+            font-size: 2.25rem; 
+            font-weight: 800; 
             color: var(--color-text-dark);
         }
 
         .subtitle {
             margin-top: 0.5rem;
-            font-size: 1.125rem; /* lg */
+            font-size: 1.125rem; 
             color: var(--color-text-medium);
         }
 
@@ -53,23 +53,35 @@
         .config-box {
             background-color: white;
             padding: 1.5rem;
-            border-radius: 0.75rem; /* xl */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            border-radius: 0.75rem; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
             margin-bottom: 2rem;
         }
 
+        .config-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .config-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
         label {
             display: block;
-            font-size: 0.875rem; /* sm */
-            font-weight: 500; /* Medium */
+            font-size: 0.875rem; 
+            font-weight: 500; 
             color: var(--color-text-medium);
-            margin-bottom: 0.5rem;
         }
 
         .flex-group {
             display: flex;
             align-items: center;
-            gap: 1rem; /* space-x-4 */
+            gap: 1rem; 
         }
 
         input[type="number"] {
@@ -77,9 +89,9 @@
             width: 100%;
             padding: 0.5rem 1rem;
             border: 1px solid var(--color-border);
-            border-radius: 0.5rem; /* lg */
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
-            font-size: 1.125rem; /* lg */
+            border-radius: 0.5rem; 
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); 
+            font-size: 1.125rem; 
             font-family: 'Consolas', 'Courier New', monospace;
             transition: border-color 0.15s, box-shadow 0.15s;
         }
@@ -87,33 +99,36 @@
         input[type="number"]:focus {
             border-color: var(--color-primary);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); /* focus ring */
+            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1); 
         }
 
         /* Buttons */
         .btn {
             padding: 0.5rem 1.5rem;
-            font-weight: 600; /* Semibold */
-            border-radius: 0.5rem; /* lg */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); /* shadow-md */
+            font-weight: 600; 
+            border-radius: 0.5rem; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); 
             transition: background-color 0.15s, transform 0.15s, box-shadow 0.15s;
             cursor: pointer;
             border: none;
             color: white;
         }
 
-        .btn-primary {
+        .btn-process {
             background-color: var(--color-primary);
+            width: 100%;
+            padding: 0.75rem 1.5rem;
+            font-size: 1.125rem;
         }
 
-        .btn-primary:hover {
+        .btn-process:hover {
             background-color: var(--color-primary-dark);
-            transform: scale(1.05);
+            transform: scale(1.01);
         }
         
         /* Copy Button Specifics */
         .btn-copy {
-            font-size: 0.875rem; /* sm */
+            font-size: 0.875rem; 
             padding: 0.25rem 1rem;
             background-color: var(--color-success);
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
@@ -132,23 +147,37 @@
         /* Grid Layout (Text Areas) */
         .grid-layout {
             display: grid;
-            grid-template-columns: 1fr; /* Single column on mobile */
+            grid-template-columns: 1fr; 
             gap: 2rem;
         }
+        
+        .output-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem; /* Space between multiple output sections */
+        }
+        
+        .output-section {
+            padding: 1rem;
+            border: 1px solid var(--color-border);
+            border-radius: 0.5rem;
+            background-color: #ffffff;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
 
-        @media (min-width: 1024px) { /* lg breakpoint equivalent */
+        @media (min-width: 1024px) { 
             .container {
-                 padding: 2rem;
+                padding: 2rem;
             }
             .grid-layout {
-                grid-template-columns: repeat(2, 1fr); /* Two columns on desktop */
+                grid-template-columns: repeat(2, 1fr); 
             }
         }
 
         /* Text Area Styling */
         h2 {
-            font-size: 1.25rem; /* xl */
-            font-weight: 600; /* Semibold */
+            font-size: 1.25rem; 
+            font-weight: 600; 
             color: var(--color-text-dark);
             margin-bottom: 0.75rem;
         }
@@ -157,8 +186,8 @@
             width: 100%;
             padding: 0.75rem;
             border: 1px solid var(--color-border);
-            border-radius: 0.5rem; /* lg */
-            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06); /* shadow-inner */
+            border-radius: 0.5rem; 
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06); 
             resize: none;
             font-size: 1rem;
             font-family: 'Consolas', 'Courier New', monospace;
@@ -166,12 +195,12 @@
         }
         
         textarea:focus {
-            border-color: #3b82f6; /* Blue-500 */
+            border-color: #3b82f6; 
             outline: none;
         }
 
         textarea[readonly] {
-            background-color: #f9fafb; /* Gray-50 */
+            background-color: #f9fafb; 
         }
 
         /* Utility classes */
@@ -194,16 +223,7 @@
         }
 
         .message-error {
-            color: #dc2626; /* Red-600 */
-        }
-
-        /* Custom scrollbar for textareas */
-        textarea::-webkit-scrollbar {
-            width: 8px;
-        }
-        textarea::-webkit-scrollbar-thumb {
-            background-color: #a0aec0; /* Gray-400 */
-            border-radius: 4px;
+            color: #dc2626; 
         }
     </style>
 </head>
@@ -211,41 +231,45 @@
 
     <div class="container">
         <header class="header">
-            <h1>Discord Word Wrap Utility</h1><sub>by ts5573</sub>
-            <p class="subtitle">Simulate word wrap for clients that don't, by inserting manual newlines, while preserving your paragraph breaks.</p>
+            <h1>Unified Text Wrap & Split Utility</h1>
+            <p class="subtitle">1. Hard wrap text to line limit. 2. Split the wrapped result into chunks by total character limit.</p>
         </header>
 
-        <!-- Configuration -->
         <div class="config-box">
-            <label for="charLimit">
-                Maximum Characters Per Line (Default: 100)
-            </label>
-            <div class="flex-group">
-                <input type="number" id="charLimit" value="100" min="10" max="200">
-                <button id="processButton" class="btn btn-primary">
-                    Wrap Text
-                </button>
+            <div class="config-group">
+                <div class="config-item">
+                    <label for="lineCharLimit">
+                        **Max Chars Per Line** (Step 1: Hard Word Wrap)
+                    </label>
+                    <input type="number" id="lineCharLimit" value="100" min="10" max="200">
+                </div>
+
+                <div class="config-item">
+                    <label for="splitCharLimit">
+                        **Max Chars Per Chunk** (Step 2: Split Output)
+                    </label>
+                    <input type="number" id="splitCharLimit" value="40000" min="100" max="100000">
+                </div>
             </div>
+
+            <button id="processButton" class="btn btn-process">
+                Process & Split Text
+            </button>
+            <div id="messageBox"></div>
+
         </div>
 
-        <!-- Text Areas -->
         <div class="grid-layout">
-            <!-- Input Area -->
             <div>
                 <h2>1. Paste Original Text Here</h2>
-                <textarea id="inputText" rows="15" placeholder="Paste your long, unformatted text..."></textarea>
+                <textarea id="inputText" rows="20" placeholder="Paste your long, unformatted text..."></textarea>
             </div>
 
-            <!-- Output Area -->
-            <div>
-                <h2 class="h2-flex">
-                    <span>2. Wrapped Output</span>
-                    <button id="copyButton" class="btn btn-copy" disabled>
-                        Copy to Clipboard
-                    </button>
-                </h2>
-                <textarea id="outputText" rows="15" readonly placeholder="Wrapped text will appear here..."></textarea>
-                <div id="messageBox"></div>
+            <div class="output-container" id="outputContainer">
+                <div class="output-section">
+                    <h2>2. Output Chunks Will Appear Here</h2>
+                    <textarea id="outputTextPlaceholder" rows="15" readonly placeholder="Click 'Process & Split Text' above to generate wrapped and split output chunks."></textarea>
+                </div>
             </div>
         </div>
     </div>
@@ -253,113 +277,216 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const inputText = document.getElementById('inputText');
-            const outputText = document.getElementById('outputText');
-            const charLimitInput = document.getElementById('charLimit');
+            const outputContainer = document.getElementById('outputContainer');
+            const lineCharLimitInput = document.getElementById('lineCharLimit');
+            const splitCharLimitInput = document.getElementById('splitCharLimit');
             const processButton = document.getElementById('processButton');
-            const copyButton = document.getElementById('copyButton');
             const messageBox = document.getElementById('messageBox');
 
-            // --- Core Wrapping Logic ---
+            // --- Core Wrapping Logic (Step 1) ---
             function wrapText(text, maxChars) {
                 if (!text) return "";
-
-                // Split the text by existing newlines (handling both \n and \r\n)
-                const paragraphs = text.split(/\r?\n/);
+                const paragraphs = text.split(/(\r?\n)/);
                 let wrappedResult = [];
 
-                for (const paragraph of paragraphs) {
-                    const lineToProcess = paragraph.trim();
+                for (let i = 0; i < paragraphs.length; i++) {
+                    const segment = paragraphs[i];
+                    
+                    if (segment === '\n' || segment === '\r\n') {
+                        wrappedResult.push(segment.trim());
+                        continue;
+                    }
+
+                    const lineToProcess = segment.trim();
 
                     if (lineToProcess === "") {
-                        // Preserve blank lines/original newlines
                         wrappedResult.push("");
                         continue;
                     }
 
-                    // If the line is short enough, just add it and move on
                     if (lineToProcess.length <= maxChars) {
                         wrappedResult.push(lineToProcess);
                         continue;
                     }
 
-                    // Apply wrapping logic to the long line segment
+                    // Apply wrapping logic
                     let currentPos = 0;
                     while (currentPos < lineToProcess.length) {
                         let breakPoint = maxChars;
-                        // Search backward up to 15 characters (or to the start) for a space to avoid breaking a word
-                        let searchAreaStart = Math.max(0, currentPos);
-                        let searchAreaEnd = Math.min(lineToProcess.length, currentPos + maxChars);
-                        let searchArea = lineToProcess.substring(searchAreaStart, searchAreaEnd);
-                        
-                        let lastSpace = searchArea.lastIndexOf(' ');
+                        let segmentToSearch = lineToProcess.substring(currentPos, currentPos + maxChars + 1);
 
-                        // Determine the best break point
-                        if (lastSpace !== -1 && (maxChars - lastSpace) < 15) {
-                             // Found a good space before the limit
-                             breakPoint = lastSpace;
+                        let lastSpace = -1;
+                        for (let j = Math.min(maxChars, segmentToSearch.length - 1); j >= 0; j--) {
+                            if (segmentToSearch[j] === ' ') {
+                                lastSpace = j;
+                                break;
+                            }
+                        }
+
+                        if (lastSpace !== -1 && lastSpace > 0) {
+                            if (maxChars - lastSpace < 15) { 
+                                breakPoint = lastSpace;
+                            } else {
+                                breakPoint = lastSpace;
+                            }
                         } else {
-                            // No good space, or we hit the end of the line (just use maxChars or remaining length)
                             breakPoint = Math.min(maxChars, lineToProcess.length - currentPos);
+                        }
+
+                        if (breakPoint === 0 && lineToProcess.length > currentPos) {
+                            breakPoint = maxChars; 
                         }
 
                         const wrappedLine = lineToProcess.substring(currentPos, currentPos + breakPoint).trim();
                         wrappedResult.push(wrappedLine);
                         currentPos += breakPoint;
 
-                        // Skip any leading spaces on the new line segment
                         while (currentPos < lineToProcess.length && lineToProcess[currentPos] === ' ') {
                             currentPos++;
                         }
                     }
                 }
-
-                // Join the resulting lines with newlines
-                return wrappedResult.join('\n');
+                
+                return wrappedResult.filter(line => line !== null).join('\n');
             }
 
-            // --- Event Handlers ---
-            function updateOutput() {
-                const text = inputText.value;
-                const maxChars = parseInt(charLimitInput.value, 10);
+            // --- Splitting Logic (Step 2) ---
+            function splitText(text, maxChars) {
+                const chunks = [];
+                let currentPos = 0;
+                
+                while (currentPos < text.length) {
+                    let endPos = Math.min(text.length, currentPos + maxChars);
+                    let breakPoint = endPos;
+                    
+                    let searchStart = Math.max(currentPos, endPos - 100);
+                    let subText = text.substring(searchStart, endPos);
+                    
+                    let lastParagraphBreak = subText.lastIndexOf('\n\n');
+                    
+                    if (lastParagraphBreak !== -1) {
+                        breakPoint = searchStart + lastParagraphBreak + 1; 
+                    } else {
+                        let lastLineBreak = subText.lastIndexOf('\n');
+                        if (lastLineBreak !== -1 && endPos - (searchStart + lastLineBreak) < 30) {
+                            breakPoint = searchStart + lastLineBreak + 1;
+                        }
+                    }
 
-                if (isNaN(maxChars) || maxChars < 10) {
-                    messageBox.textContent = "Please enter a valid line limit (min 10).";
+                    if (breakPoint === currentPos) {
+                        breakPoint = endPos;
+                    }
+                    
+                    const chunk = text.substring(currentPos, breakPoint).trim();
+                    chunks.push(chunk);
+                    currentPos = breakPoint;
+                    
+                    while (currentPos < text.length && (text[currentPos] === '\n' || text[currentPos] === '\r' || text[currentPos] === ' ')) {
+                        currentPos++;
+                    }
+                }
+                
+                return chunks;
+            }
+
+            // --- Unified Processing Handler ---
+            function handleProcessAndSplit() {
+                // Clear all previous outputs
+                outputContainer.innerHTML = '';
+                messageBox.textContent = "";
+
+                const text = inputText.value;
+                const lineMaxChars = parseInt(lineCharLimitInput.value, 10);
+                const splitMaxChars = parseInt(splitCharLimitInput.value, 10);
+
+                if (isNaN(lineMaxChars) || lineMaxChars < 10 || isNaN(splitMaxChars) || splitMaxChars < 100) {
+                    messageBox.textContent = "Please enter valid limits (Line min 10, Chunk min 100).";
                     messageBox.className = 'message-error';
-                    outputText.value = "";
-                    copyButton.disabled = true;
                     return;
                 }
 
-                messageBox.textContent = "";
-                const wrappedText = wrapText(text, maxChars);
-                outputText.value = wrappedText;
-
-                // Enable copy button if there's content
-                if (wrappedText.length > 0) {
-                    copyButton.disabled = false;
-                } else {
-                    copyButton.disabled = true;
+                if (!text) {
+                    messageBox.textContent = "Input text is empty. Nothing to process.";
+                    messageBox.className = 'message-error';
+                    return;
                 }
+
+                // Step 1: Wrap Lines
+                const wrappedText = wrapText(text, lineMaxChars);
+
+                // Step 2: Split Wrapped Text into Chunks
+                const textChunks = splitText(wrappedText, splitMaxChars);
+                
+                // --- Display Output ---
+                
+                let chunkElements = [];
+
+                textChunks.forEach((chunk, index) => {
+                    const chunkNumber = index + 1;
+                    const chunkId = `outputChunk${chunkNumber}`; // Unique ID for textarea
+
+                    // Create the new output section div
+                    const newOutputSection = document.createElement('div');
+                    newOutputSection.className = 'output-section';
+
+                    // Create the header with copy button
+                    const header = document.createElement('h2');
+                    header.className = 'h2-flex';
+                    // Pass the unique ID of the target textarea to the button's data attribute
+                    header.innerHTML = `
+                        <span>Chunk ${chunkNumber} (${chunk.length} chars)</span>
+                        <button class="btn btn-copy chunk-copy-btn" data-target-id="${chunkId}" title="Copy Chunk ${chunkNumber}">
+                            Copy Chunk
+                        </button>
+                    `;
+                    
+                    // Create the textarea with the unique ID
+                    const newTextArea = document.createElement('textarea');
+                    newTextArea.id = chunkId;
+                    newTextArea.rows = 10;
+                    newTextArea.readOnly = true;
+                    newTextArea.value = chunk;
+                    
+                    newOutputSection.appendChild(header);
+                    newOutputSection.appendChild(newTextArea);
+                    chunkElements.push(newOutputSection);
+                });
+                
+                // Add all new chunks to the container
+                chunkElements.forEach(el => outputContainer.appendChild(el));
+
+
+                // Update the final message
+                if (textChunks.length === 0) {
+                    messageBox.textContent = "Processing failed or resulted in empty output.";
+                    messageBox.className = 'message-error';
+                } else if (textChunks.length === 1) {
+                     messageBox.textContent = "Text wrapped successfully, but one chunk was sufficient.";
+                    messageBox.className = 'message-success';
+                } else {
+                    messageBox.textContent = `Text successfully wrapped and split into ${textChunks.length} chunks!`;
+                    messageBox.className = 'message-success';
+                }
+                
+                // Add event listeners for the new copy buttons, using event delegation for simplicity or direct listener
+                document.querySelectorAll('.chunk-copy-btn').forEach(button => {
+                    button.addEventListener('click', handleCopyChunk);
+                });
             }
 
-            // Bind process button click
-            processButton.addEventListener('click', updateOutput);
-
-            // Ensure copy button is disabled if input is cleared
-            inputText.addEventListener('input', () => {
-                if (inputText.value.length === 0) {
-                    outputText.value = "";
-                    copyButton.disabled = true;
-                }
-            });
-
-
-            // Copy functionality
-            copyButton.addEventListener('click', () => {
-                const textToCopy = outputText.value;
+            // --- Corrected Copy Functionality for Dynamic Chunks ---
+            function handleCopyChunk(event) {
+                const button = event.currentTarget;
+                // Retrieve the unique ID from the button's data attribute
+                const targetId = button.dataset.targetId; 
+                
+                // Use getElementById to reliably find the specific textarea
+                const textArea = document.getElementById(targetId);
+                const textToCopy = textArea ? textArea.value : '';
+                
                 if (textToCopy) {
                     try {
-                        // Use execCommand for broader compatibility in sandboxed environments
+                        // Use a temporary textarea for copying to clipboard
                         const tempInput = document.createElement('textarea');
                         tempInput.value = textToCopy;
                         document.body.appendChild(tempInput);
@@ -367,20 +494,39 @@
                         document.execCommand('copy');
                         document.body.removeChild(tempInput);
 
-                        messageBox.textContent = "Copied successfully!";
+                        // Extract chunk number from the ID for feedback
+                        const chunkNumber = targetId.replace('outputChunk', '');
+
+                        messageBox.textContent = `Chunk ${chunkNumber} copied successfully!`;
                         messageBox.className = 'message-success';
 
-                        // Clear message after a brief pause
                         setTimeout(() => {
                             messageBox.textContent = "";
                         }, 2500);
 
                     } catch (err) {
-                        messageBox.textContent = "Failed to copy. Please copy manually.";
+                        messageBox.textContent = "Failed to copy. Please copy manually. (Error: Clipboard API access denied)";
                         messageBox.className = 'message-error';
                     }
                 }
+            }
+
+
+            // --- Event Listeners ---
+            processButton.addEventListener('click', handleProcessAndSplit);
+
+            // Clear output when input is cleared
+            inputText.addEventListener('input', () => {
+                if (inputText.value.length === 0) {
+                    outputContainer.innerHTML = `
+                        <div class="output-section">
+                            <h2>2. Output Chunks Will Appear Here</h2>
+                            <textarea id="outputTextPlaceholder" rows="15" readonly placeholder="Click 'Process & Split Text' above to generate wrapped and split output chunks."></textarea>
+                        </div>`;
+                    messageBox.textContent = "";
+                }
             });
+            
         });
     </script>
 
