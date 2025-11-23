@@ -266,7 +266,7 @@
             </div>
 
             <div class="output-container" id="outputContainer">
-                <div class="output-section">
+                <div class="output-section" id="initialPlaceholder">
                     <h2>2. Output Chunks Will Appear Here</h2>
                     <textarea id="outputTextPlaceholder" rows="15" readonly placeholder="Click 'Process & Split Text' above to generate wrapped and split output chunks."></textarea>
                 </div>
@@ -278,6 +278,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const inputText = document.getElementById('inputText');
             const outputContainer = document.getElementById('outputContainer');
+            const initialPlaceholder = document.getElementById('initialPlaceholder');
             const lineCharLimitInput = document.getElementById('lineCharLimit');
             const splitCharLimitInput = document.getElementById('splitCharLimit');
             const processButton = document.getElementById('processButton');
@@ -389,6 +390,40 @@
                 return chunks;
             }
 
+            // --- Core Function to Render Single Chunk Output ---
+            function renderSingleChunk(chunk) {
+                // Clear existing output
+                outputContainer.innerHTML = '';
+
+                const chunkNumber = 1;
+                const chunkId = `outputChunk${chunkNumber}`; 
+
+                const newOutputSection = document.createElement('div');
+                newOutputSection.className = 'output-section';
+
+                const header = document.createElement('h2');
+                header.className = 'h2-flex';
+                header.innerHTML = `
+                    <span>Chunk ${chunkNumber} (${chunk.length} chars) - No Split Required</span>
+                    <button class="btn btn-copy chunk-copy-btn" data-target-id="${chunkId}" title="Copy Chunk 1">
+                        Copy Chunk
+                    </button>
+                `;
+                
+                const newTextArea = document.createElement('textarea');
+                newTextArea.id = chunkId;
+                newTextArea.rows = 10;
+                newTextArea.readOnly = true;
+                newTextArea.value = chunk;
+                
+                newOutputSection.appendChild(header);
+                newOutputSection.appendChild(newTextArea);
+                outputContainer.appendChild(newOutputSection);
+
+                // Add event listener for the single copy button
+                document.querySelector('.chunk-copy-btn').addEventListener('click', handleCopyChunk);
+            }
+
             // --- Unified Processing Handler ---
             function handleProcessAndSplit() {
                 // Clear all previous outputs
@@ -413,11 +448,20 @@
 
                 // Step 1: Wrap Lines
                 const wrappedText = wrapText(text, lineMaxChars);
+                
+                // --- CORRECTED LOGIC: Check length AFTER wrapping ---
+                if (wrappedText.length <= splitMaxChars) {
+                    renderSingleChunk(wrappedText);
+                    messageBox.textContent = "Text wrapped successfully, and output as a single chunk (length < chunk limit).";
+                    messageBox.className = 'message-success';
+                    return;
+                }
+                // --- END CORRECTED LOGIC ---
 
                 // Step 2: Split Wrapped Text into Chunks
                 const textChunks = splitText(wrappedText, splitMaxChars);
                 
-                // --- Display Output ---
+                // --- Display Output (Multiple Chunks) ---
                 
                 let chunkElements = [];
 
@@ -425,14 +469,11 @@
                     const chunkNumber = index + 1;
                     const chunkId = `outputChunk${chunkNumber}`; // Unique ID for textarea
 
-                    // Create the new output section div
                     const newOutputSection = document.createElement('div');
                     newOutputSection.className = 'output-section';
 
-                    // Create the header with copy button
                     const header = document.createElement('h2');
                     header.className = 'h2-flex';
-                    // Pass the unique ID of the target textarea to the button's data attribute
                     header.innerHTML = `
                         <span>Chunk ${chunkNumber} (${chunk.length} chars)</span>
                         <button class="btn btn-copy chunk-copy-btn" data-target-id="${chunkId}" title="Copy Chunk ${chunkNumber}">
@@ -440,7 +481,6 @@
                         </button>
                     `;
                     
-                    // Create the textarea with the unique ID
                     const newTextArea = document.createElement('textarea');
                     newTextArea.id = chunkId;
                     newTextArea.rows = 10;
@@ -452,7 +492,6 @@
                     chunkElements.push(newOutputSection);
                 });
                 
-                // Add all new chunks to the container
                 chunkElements.forEach(el => outputContainer.appendChild(el));
 
 
@@ -460,33 +499,27 @@
                 if (textChunks.length === 0) {
                     messageBox.textContent = "Processing failed or resulted in empty output.";
                     messageBox.className = 'message-error';
-                } else if (textChunks.length === 1) {
-                     messageBox.textContent = "Text wrapped successfully, but one chunk was sufficient.";
-                    messageBox.className = 'message-success';
                 } else {
                     messageBox.textContent = `Text successfully wrapped and split into ${textChunks.length} chunks!`;
                     messageBox.className = 'message-success';
                 }
                 
-                // Add event listeners for the new copy buttons, using event delegation for simplicity or direct listener
+                // Add event listeners for the new copy buttons
                 document.querySelectorAll('.chunk-copy-btn').forEach(button => {
                     button.addEventListener('click', handleCopyChunk);
                 });
             }
 
-            // --- Corrected Copy Functionality for Dynamic Chunks ---
+            // --- Copy Functionality for Dynamic Chunks ---
             function handleCopyChunk(event) {
                 const button = event.currentTarget;
-                // Retrieve the unique ID from the button's data attribute
                 const targetId = button.dataset.targetId; 
                 
-                // Use getElementById to reliably find the specific textarea
                 const textArea = document.getElementById(targetId);
                 const textToCopy = textArea ? textArea.value : '';
                 
                 if (textToCopy) {
                     try {
-                        // Use a temporary textarea for copying to clipboard
                         const tempInput = document.createElement('textarea');
                         tempInput.value = textToCopy;
                         document.body.appendChild(tempInput);
@@ -494,7 +527,6 @@
                         document.execCommand('copy');
                         document.body.removeChild(tempInput);
 
-                        // Extract chunk number from the ID for feedback
                         const chunkNumber = targetId.replace('outputChunk', '');
 
                         messageBox.textContent = `Chunk ${chunkNumber} copied successfully!`;
@@ -512,20 +544,26 @@
             }
 
 
-            // --- Event Listeners ---
+            // --- Event Listeners and Initial Setup ---
+            
+            // Function to reset output to the placeholder
+            function resetOutputPlaceholder() {
+                outputContainer.innerHTML = '';
+                outputContainer.appendChild(initialPlaceholder);
+            }
+
             processButton.addEventListener('click', handleProcessAndSplit);
 
             // Clear output when input is cleared
             inputText.addEventListener('input', () => {
                 if (inputText.value.length === 0) {
-                    outputContainer.innerHTML = `
-                        <div class="output-section">
-                            <h2>2. Output Chunks Will Appear Here</h2>
-                            <textarea id="outputTextPlaceholder" rows="15" readonly placeholder="Click 'Process & Split Text' above to generate wrapped and split output chunks."></textarea>
-                        </div>`;
+                    resetOutputPlaceholder();
                     messageBox.textContent = "";
                 }
             });
+            
+            // Ensure placeholder is visible on load
+            resetOutputPlaceholder();
             
         });
     </script>
