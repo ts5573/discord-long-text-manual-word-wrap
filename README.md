@@ -1,5 +1,7 @@
-As of Nov 2025, Discord will put long text pasted from clipboard into a message object. 
+As of Nov 2025, Discord will put long text pasted from clipboard into a txt file. 
 
-The thing is, Discord won't wrap long text in the message object's display client, hence you have to scroll horizontally to see all the text, not ideal for RPs etc. 
+In Discord's txt file viewer, it won't wrap long text, hence you have to scroll horizontally to see all the text, not ideal for RPs etc. 
 
-This tool manually inserts newlines to simulate word wrapping to solve the issue.
+The txt file viewer also only displays the first 50KB characters.
+
+This tool manually inserts newlines to simulate word wrapping, and also provides text splitting/chunking functionality to solve the issues.
